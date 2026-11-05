@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Where Did My Money Go</title>
+    <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+
+    <link rel="icon" type="image/x-icon" href="assets/icon/favicon.ico" />
+
+    <!-- manifest.json provides metadata used when your web app is installed on a
+         user's device, or lived on the home screen of a mobile device -->
+    <link rel="manifest" href="manifest.json" />
+
+    <!-- add to homescreen for safari on ios -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  </head>
+  <body>
+    <app-root></app-root>
+
+    <!-- Firebase App and Authentication SDKs (v9/v10 Compatibility setup) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+
+    <script>
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyBrh_sadYjCc8w-lTTurhl6XAr7h-HHNMw",
+        authDomain: "survey-19d49.firebaseapp.com",
+        projectId: "survey-19d49",
+        storageBucket: "survey-19d49.firebasestorage.app",
+        messagingSenderId: "532636199086",
+        appId: "1:532636199086:web:65310e9fbd0490cfece53f",
+        measurementId: "G-YHHX51RDDT"
+      };
+
+      // Initialize Firebase
+      if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+      }
+    </script>
+  </body>
+</html>
