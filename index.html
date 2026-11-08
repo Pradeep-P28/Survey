@@ -1,0 +1,487 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Where Did My Money Go</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500&family=Noto+Sans+Devanagari:wght@400;700&family=Noto+Sans+Tamil:wght@400;700&family=Noto+Sans+Telugu:wght@400;700&family=Noto+Sans+Bengali:wght@400;700&family=Noto+Sans+Gujarati:wght@400;700&family=Noto+Sans+Kannada:wght@400;700&family=Noto+Sans+Malayalam:wght@400;700&family=Noto+Sans+Gurmukhi:wght@400;700&family=Noto+Sans+Oriya:wght@400;700&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap"><style>
+/* Layout: one-question-at-a-time "missing poster" card, centered column, results panel for owner below */
+:root{
+  --bg:#F3F1EC; --card:#FFFFFF; --ink:#14213D; --soft:#55617A; --line:#D9D5CB;
+  --hi:#FFD23F; --hi-ink:#14213D; --red:#D7263D; --ok:#1B8A5A;
+  --f-display:'Bricolage Grotesque','Noto Sans Devanagari','Noto Sans Tamil','Noto Sans Telugu','Noto Sans Bengali','Noto Sans Gujarati','Noto Sans Kannada','Noto Sans Malayalam','Noto Sans Gurmukhi','Noto Sans Oriya','Noto Nastaliq Urdu','Trebuchet MS',sans-serif;
+  --f-body:'Instrument Sans','Noto Sans Devanagari','Noto Sans Tamil','Noto Sans Telugu','Noto Sans Bengali','Noto Sans Gujarati','Noto Sans Kannada','Noto Sans Malayalam','Noto Sans Gurmukhi','Noto Sans Oriya','Noto Nastaliq Urdu',system-ui,sans-serif;
+  --f-mono:'JetBrains Mono',ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1526; --card:#172036; --ink:#F2F4FA; --soft:#A3AEC7; --line:#2A3654;
+  --hi:#FFD23F; --hi-ink:#14213D; --red:#FF6B7D; --ok:#4CD694; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1526; --card:#172036; --ink:#F2F4FA; --soft:#A3AEC7; --line:#2A3654;
+  --hi:#FFD23F; --hi-ink:#14213D; --red:#FF6B7D; --ok:#4CD694; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5;
+  padding-block:24px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1,h2{font-family:var(--f-display);font-weight:800;line-height:1.05;margin:0;text-wrap:balance;letter-spacing:-0.02em}
+h1{font-size:clamp(2.2rem,9vw,3.2rem)}
+h2{font-size:clamp(1.5rem,6vw,2rem)}
+p{margin:0}
+.card{background:var(--card);border:2px solid var(--ink);border-radius:14px;padding:22px;box-shadow:6px 6px 0 var(--ink);display:flex;flex-direction:column;gap:16px}
+.stamp{font-family:var(--f-mono);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--red);border:2px solid var(--red);align-self:flex-start;padding:2px 8px;border-radius:4px;transform:rotate(-2deg)}
+.mark{background:var(--hi);color:var(--hi-ink);padding:0 .2em;border-radius:3px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.soft{color:var(--soft)}
+.btn{font:600 1rem var(--f-body);border:2px solid var(--ink);background:var(--hi);color:var(--hi-ink);padding:12px 18px;border-radius:10px;cursor:pointer;box-shadow:3px 3px 0 var(--ink);transition:transform .08s,box-shadow .08s;text-align:left}
+.btn:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.btn.alt{background:var(--card);color:var(--ink)}
+.btn:focus-visible,input:focus-visible,.opt:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{font:500 1rem var(--f-body);text-align:left;border:2px solid var(--line);background:var(--bg);color:var(--ink);padding:13px 14px;border-radius:10px;cursor:pointer;transition:border-color .1s,background .1s}
+.opt:hover{border-color:var(--ink)}
+.opt.picked{border-color:var(--ink);background:var(--hi);color:var(--hi-ink)}
+.prog{display:flex;gap:6px}
+.prog i{flex:1;height:6px;border-radius:3px;background:var(--line)}
+.prog i.on{background:var(--ink)}
+.reaction{font-family:var(--f-mono);font-size:.85rem;color:var(--soft);min-height:1.4em}
+.meter{height:14px;border-radius:7px;background:var(--line);overflow:hidden;border:2px solid var(--ink)}
+.meter b{display:block;height:100%;background:var(--red)}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+input[type=text]{font:1rem var(--f-body);width:100%;padding:12px;border:2px solid var(--ink);border-radius:10px;background:var(--bg);color:var(--ink)}
+label{font-size:.85rem;color:var(--soft);display:block;margin-bottom:4px}
+.thanks{color:var(--ok);font-weight:600}
+.own{font-size:.9rem;display:flex;flex-direction:column;gap:8px}
+.own table{width:100%;border-collapse:collapse}
+.own td{padding:4px 0;border-bottom:1px solid var(--line)}
+.own td:last-child{text-align:right;font-family:var(--f-mono)}
+.foot{font-size:.8rem;color:var(--soft);text-align:center}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.adm{display:flex;flex-direction:column;gap:14px}
+.adm table{width:100%;border-collapse:collapse;font-size:.9rem}
+.adm td,.adm th{padding:6px 4px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.adm td:last-child,.adm th:last-child{text-align:right;font-family:var(--f-mono)}
+.ch{margin:0 0 6px}
+.ch h3{font:700 .95rem var(--f-body);margin:6px 0 8px;line-height:1.3}
+.br{display:grid;grid-template-columns:minmax(84px,38%) 1fr auto;gap:8px;align-items:center;margin:5px 0;font-size:.85rem}
+.bl{color:var(--ink);overflow-wrap:anywhere;line-height:1.25}
+.bt{height:14px;border-left:1px solid var(--soft)}
+.bt i{display:block;height:14px;background:var(--bar);border-radius:0 4px 4px 0}
+.bv{color:var(--soft);font-family:var(--f-mono);font-size:.78rem;min-width:62px;text-align:right;white-space:nowrap}
+.cols{display:flex;align-items:flex-end;gap:3px;height:130px;border-bottom:1px solid var(--soft);padding-top:16px}
+.cc{flex:1;max-width:26px;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;font:.7rem var(--f-mono);color:var(--soft)}
+.cc b{display:block;width:100%;background:var(--bar);border-radius:4px 4px 0 0;min-height:0}
+.cl{display:flex;gap:3px}.cl span{flex:1;max-width:26px;text-align:center;font:.68rem var(--f-mono);color:var(--soft);padding-top:3px}
+:root{--bar:#2F5FD0;--pos:#1B7F4B;--neg:#C8283D}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bar:#7CA4FF;--pos:#4CD694;--neg:#FF6B7D}}
+:root[data-theme="dark"]{--bar:#7CA4FF;--pos:#4CD694;--neg:#FF6B7D}
+.ov{display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:center}
+.ovl{flex:1;min-width:190px;display:flex;flex-direction:column;gap:10px}
+.ovr{display:flex;align-items:center;gap:10px;font-size:.95rem}
+.ovr i{width:14px;height:14px;border-radius:4px;flex:none}
+.ovr b{margin-left:auto;font-family:var(--f-mono);font-size:1.05rem}
+details.ch summary{margin:10px 0}
+.lnk{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.lnk code{font-family:var(--f-mono);font-size:.78rem;word-break:break-all;flex:1;min-width:0;background:var(--bg);padding:6px 8px;border-radius:6px;border:1px solid var(--line)}
+.sm{padding:6px 12px;font-size:.85rem;box-shadow:2px 2px 0 var(--ink)}
+.err{color:var(--red);font-size:.9rem}
+.big4{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.big4 div{border:2px solid var(--ink);border-radius:10px;padding:10px 12px}
+.big4 b{display:block;font-family:var(--f-display);font-size:1.8rem;line-height:1.1}
+
+.langs{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:500 .9rem var(--f-body);border:2px solid var(--line);background:var(--card);color:var(--ink);padding:6px 12px;border-radius:999px;cursor:pointer}
+.chip.on{background:var(--hi);color:var(--hi-ink);border-color:var(--ink)}
+.chip:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+input[type=password]{font:1rem var(--f-body);width:100%;padding:12px;border:2px solid var(--ink);border-radius:10px;background:var(--bg);color:var(--ink)}
+details{border-bottom:1px solid var(--line);padding:8px 0}
+summary{cursor:pointer;font-size:.9rem}
+.qa{display:flex;flex-direction:column;gap:10px;padding:10px 0;font-size:.85rem}
+body.ur .card,body.ur .foot{line-height:1.9}
+html:not([lang=en]) .stamp{letter-spacing:0;text-transform:none}
+html:not([lang=en]) h1,html:not([lang=en]) h2{letter-spacing:0}
+html[dir=rtl] .stamp{align-self:flex-end;transform:rotate(2deg)}
+html[dir=rtl] .btn,html[dir=rtl] .opt{text-align:right}
+
+.wrap{position:relative;z-index:1}
+.enter{animation:slidein .4s cubic-bezier(.2,.8,.2,1)}
+@keyframes slidein{from{opacity:0;transform:translateX(28px) scale(.98)}to{opacity:1;transform:none}}
+.opt.picked{animation:pop .3s ease}
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}
+.shake{animation:shake .5s}
+@keyframes shake{10%,90%{transform:translateX(-3px) rotate(-.5deg)}30%,70%{transform:translateX(6px) rotate(.8deg)}50%{transform:translateX(-6px) rotate(-.8deg)}}
+.wobble{animation:wobble .6s}
+@keyframes wobble{0%,100%{transform:rotate(0)}25%{transform:rotate(-1.2deg)}75%{transform:rotate(1.2deg)}}
+.wallet{display:flex;align-items:center;gap:8px;font-family:var(--f-mono);font-size:.8rem}
+.wbar{flex:1;height:12px;border-radius:6px;border:2px solid var(--ink);background:var(--line);overflow:hidden}
+.wbar b{display:block;height:100%;transition:width .7s ease,background .5s}
+.wf{font-size:1.3rem;display:inline-block;transition:transform .3s}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:50;overflow:hidden}
+.fl{position:absolute;will-change:transform,opacity}
+#dr{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;opacity:.35}
+#dr i{position:absolute;bottom:-40px;font-style:normal;font-size:28px;animation:driftup linear infinite}
+@keyframes driftup{to{transform:translateY(-110vh) rotate(40deg)}}
+.spin{font-size:84px;animation:sweep 1.1s ease-in-out infinite}
+@keyframes sweep{0%,100%{transform:translateX(-30px) rotate(-15deg)}50%{transform:translateX(30px) rotate(15deg)}}
+.dots{font-size:28px;letter-spacing:.2em;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:.35}}
+.bigemo{font-size:64px;line-height:1;animation:bounce .8s ease .2s both}
+@keyframes bounce{0%{transform:scale(0) rotate(-30deg)}60%{transform:scale(1.25) rotate(8deg)}100%{transform:scale(1) rotate(0)}}
+.meter b{transition:width 1.4s cubic-bezier(.2,.8,.2,1)}
+@media (prefers-reduced-motion:reduce){.enter,.opt.picked,.shake,.wobble,.spin,.dots,.bigemo{animation:none!important}#dr{display:none}}
+</style></head><body><div class="wrap" id="app"></div><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+// points per option, by question (shared by all languages)
+var PTS=[[3,0,3,1],[3,0,3,2],[3,2,2,1],[1,1,1,1,1],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[3,2,1,0]];
+var TAGS={suspect:3,stress:4,loan:5,summary:6,interest:7};
+var INTEREST=['yes','maybe','scared-but-yes','no'];
+var LANGS=[['en','English'],['ta','தமிழ்']];
+var T={};
+T.en={cf:"Case file · open",t1:"Where did my",t2:"money go?",intro:"Payday on the 1st. Broke by the 20th. Answer {n} quick questions and find out what kind of money detective you are.",start:"Start the investigation →",note:"Takes under a minute. No right answers. Judging is limited to the funny kind.",foot:"No bank details are asked, ever.",clue:"Clue {i} of {n}",verdict:"Verdict",youare:"You are",level:"Money mystery level",sus:"Prime suspect you named:",twist:"Plot twist",caseno:"Case not closed.",twistp:"The real problem is not spending. It is not knowing which few things ate most of the money. We are exploring a way to shortlist those suspects, so month-end stops feeling like a magic trick.",hear:"Would you want to hear about it when it is ready?",yes:"Yes, count me in",maybe:"Maybe, tell me more first",no:"Not for me",nothanks:"Fair enough. Thanks for the honest answers!",onlist:"Noted. You are on the list.",nick:"Name or nickname (optional)",contact:"Phone or email, only if you want a heads-up (optional)",save:"Save",saved:"Saved. Thank you!",cracked:"People who have cracked this case so far: {n}.",thanks:"Thanks for playing. Share it with the friend who still owes you.",
+p:[["Sherlock Saver","You know where the money goes. Honestly, you could run the investigation yourself."],["Part-time Detective","You have clues, a few suspects and no proper case file. Close, but the trail goes cold on day 20."],["Bermuda Wallet","Money enters, money vanishes, nobody finds the wreckage. Classic."],["The Great Vanishing Act","Your money has a better disappearing act than any magician. The mystery is still unsolved."]],
+q:[
+["It's the end of the month. You check your bank balance. What do you see?",[["Much less money than I expected","Where did it all go? Sad but true."],["Exactly what I planned","Great! You are very careful."],["I don't check it. I'm afraid to look.","Many people do this."],["A little less than at the start, but okay","Not bad. You are doing fine."]]],
+["A friend said, “I'll give your money back tomorrow.” That was 5 weeks ago. Do you remember how much it was?",[["No, I don't remember who or how much","The friendship stayed, the money went."],["Yes, I remember everything","You could be an accountant."],["I'm not sure who needs to pay whom","A little confusing."],["I can find it in old chats, but it takes time","Searching chats is not easy."]]],
+["How do you keep track of your spending now?",[["I keep it in my head","Easy to forget, though."],["In a notes app, but I stopped months ago","Good try."],["I read my bank SMS messages","It takes some effort."],["I used an app but stopped after a few days","Many people stop on day 3."]]],
+["Where does most of your money go?",[["Ordering food","One more order is never just one."],["Online shopping late at night","Cart at night, regret in the morning."],["Subscriptions I forgot about (apps, OTT)","Money is cut, no time to watch."],["Small daily payments (tea, rides, snacks)","Small payments add up to big ones."],["Friends and going out","Fun for you, empty pocket after."]]],
+["Which money problem stresses you the most?",[["Remembering who owes me and who I owe","Everyone gets confused about this."],["Staying inside my monthly budget","The budget lasts until the 12th."],["Saving money for something big","Saving starts next month."],["Seeing all my money in one place (cash, bank, wallets)","Four places, no full picture."]]],
+["When you lend or borrow money, how do you remember it?",[["I just remember it in my head","Trust is good."],["I look through old chats later for proof","Searching chats again."],["I write it down, but then I lose the note","Writing is good. Keeping it safe is hard."],["I don't remember. What comes back, comes back.","Calm thinking. But expensive."]]],
+["If your phone showed a short summary at the end of the month, what would you look at first?",[["Where most of my money went","This is what we want to know first."],["Who owes me and who I owe","Time to collect."],["How much I really saved","A good start."],["How this month compares to last month","A person who loves numbers."]]],
+["Imagine a short list of where your money went last month, ready for you with no work. What would you think?",[["Yes please, I want this","Noted. Thank you."],["Yes, if it is quick and simple","It will be very simple."],["I'd be a little scared, but I'd look","Brave answer."],["No, I don't need it","Okay."]]],
+["How often do you ask yourself, “Where did my money go?”",[["Almost every day","A daily habit, like tea."],["Every week, mostly after the weekend","Weekend spending is a different story."],["Once a month, at month end","At least you are on time."],["Never","Please teach us your way."]]]
+]};
+
+T.ta={cf:"வழக்கு கோப்பு · திறந்தது",t1:"என் பணம்",t2:"எங்கே போனது?",intro:"சம்பளம் 1ஆம் தேதி வரும், 20க்குள் தீரும். {n} சின்ன கேள்விகளுக்குப் பதில் சொல்லி, நீங்கள் எந்த வகை பண துப்பறிவாளர் என்று தெரிந்துகொள்ளுங்கள்.",start:"விசாரணையைத் தொடங்கு →",note:"ஒரு நிமிடத்துக்குள் முடியும். சரியான பதில் என்று எதுவும் இல்லை. தீர்ப்பு வேடிக்கையாக மட்டுமே.",foot:"வங்கி விவரங்கள் எதுவும் கேட்கப்படுவதில்லை.",clue:"துப்பு {i} / {n}",verdict:"தீர்ப்பு",youare:"நீங்கள்",level:"பண மர்ம அளவு",sus:"நீங்கள் குறிப்பிட்ட முக்கிய சந்தேக நபர்:",twist:"கதையில் திருப்பம்",caseno:"வழக்கு இன்னும் முடியவில்லை.",twistp:"உண்மையான பிரச்சினை செலவு அல்ல. பெரும்பாலான பணத்தை சாப்பிட்ட அந்தச் சில விஷயங்கள் எவை என்று தெரியாததுதான். அந்தச் சந்தேக நபர்களைப் பட்டியலிட ஒரு வழியை ஆராய்ந்து வருகிறோம், அதனால் மாத இறுதி மாயாஜாலம் போல இருக்காது.",hear:"தயாரானதும் அதைப் பற்றி கேட்க விரும்புகிறீர்களா?",yes:"ஆம், என்னையும் சேர்த்துக்கொள்ளுங்கள்",maybe:"ஒருவேளை, முதலில் இன்னும் சொல்லுங்கள்",no:"எனக்கு வேண்டாம்",nothanks:"சரி. நேர்மையான பதில்களுக்கு நன்றி!",onlist:"பதிவு செய்தோம். நீங்கள் பட்டியலில் இருக்கிறீர்கள்.",nick:"பெயர் அல்லது செல்லப் பெயர் (விருப்பம்)",contact:"தகவல் வேண்டுமெனில் மட்டும் தொலைபேசி அல்லது மின்னஞ்சல் (விருப்பம்)",save:"சேமி",saved:"சேமித்தோம். நன்றி!",cracked:"இதுவரை இந்த வழக்கைத் தீர்த்தவர்கள்: {n}.",thanks:"விளையாடியதற்கு நன்றி. இன்னும் கடன் தராத நண்பருக்கு இதை அனுப்புங்கள்.",
+p:[["ஷெர்லாக் சேமிப்பாளர்","பணம் எங்கே போகிறது என்று உங்களுக்குத் தெரியும். நீங்களே விசாரணை நடத்தலாம்."],["பகுதிநேர துப்பறிவாளர்","துப்புகள், சில சந்தேக நபர்கள் இருக்கிறார்கள், ஆனால் சரியான வழக்கு கோப்பு இல்லை. 20ஆம் நாளில் தடம் குளிர்ந்துவிடும்."],["பெர்முடா பணப்பை","பணம் உள்ளே வருகிறது, மறைகிறது, சிதைவு எங்கும் கிடைக்காது. கிளாசிக்."],["மாபெரும் மறைவு மாயம்","உங்கள் பணம் எந்த மந்திரவாதியையும் விட நன்றாக மறைகிறது. மர்மம் இன்னும் தீரவில்லை."]],
+q:[
+["மாத இறுதி. வங்கி இருப்பைப் பார்க்கிறீர்கள். என்ன தெரிகிறது?",[["நினைத்ததை விட மிகக் குறைவான பணம்","எல்லாம் எங்கே போனது? வருத்தம்தான்."],["நான் திட்டமிட்டபடியே இருக்கிறது","அருமை! நீங்கள் மிகவும் கவனமானவர்."],["நான் பார்ப்பதே இல்லை, பார்க்கப் பயம்","பலர் இப்படித்தான் செய்கிறார்கள்."],["ஆரம்பத்தை விடக் கொஞ்சம் குறைவு, பரவாயில்லை","மோசமில்லை. நன்றாகவே போகிறது."]]],
+["ஒரு நண்பர் “நாளை பணத்தைத் திருப்பித் தருகிறேன்” என்றார். அது 5 வாரங்களுக்கு முன். எவ்வளவு என்று நினைவிருக்கிறதா?",[["இல்லை, யார், எவ்வளவு என்று நினைவில்லை","நட்பு இருக்கிறது, பணம் போய்விட்டது."],["ஆம், எல்லாம் நினைவிருக்கிறது","நீங்கள் கணக்காளர் ஆகலாம்."],["யார் யாருக்குத் தர வேண்டும் என்று உறுதியாகத் தெரியவில்லை","கொஞ்சம் குழப்பம்தான்."],["பழைய சாட்டில் கிடைக்கும், ஆனால் தேட நேரம் ஆகும்","சாட் தேடுவது எளிதல்ல."]]],
+["இப்போது உங்கள் செலவுகளை எப்படிக் கணக்கு வைக்கிறீர்கள்?",[["மனதில் வைத்துக்கொள்கிறேன்","மறந்துவிடுவது சுலபம்."],["நோட்ஸ் ஆப்பில், ஆனால் பல மாதங்களாக எழுதவில்லை","முயற்சி நல்லது."],["வங்கி SMS படித்துப் பார்க்கிறேன்","கொஞ்சம் உழைப்பு தேவை."],["ஒரு ஆப் பயன்படுத்தினேன், சில நாட்களில் விட்டுவிட்டேன்","மூன்றாம் நாளே பலர் நிறுத்திவிடுவார்கள்."]]],
+["உங்கள் பணம் அதிகமாக எதற்குப் போகிறது?",[["உணவு ஆர்டர்","இன்னொரு ஆர்டர் ஒருபோதும் ஒன்றே அல்ல."],["இரவில் ஆன்லைன் ஷாப்பிங்","இரவில் கார்ட், காலையில் வருத்தம்."],["மறந்துவிட்ட சந்தாக்கள் (ஆப், OTT)","பணம் போகிறது, பார்க்க நேரமில்லை."],["சிறு செலவுகள் (டீ, ஆட்டோ, சிற்றுண்டி)","சிறிய செலவுகள் சேர்ந்து பெரிதாகும்."],["நண்பர்கள், வெளியே செல்வது","சந்தோஷம் கிடைக்கும், பணம் குறையும்."]]],
+["பணம் பற்றிய எந்த விஷயம் உங்களுக்கு அதிக மன அழுத்தம் தருகிறது?",[["யார் எனக்குத் தர வேண்டும், நான் யாருக்குத் தர வேண்டும் என்று நினைவில் வைப்பது","இந்தக் குழப்பம் எல்லோருக்கும் உண்டு."],["மாதச் செலவு வரம்புக்குள் இருப்பது","வரம்பு 12-ஆம் தேதி வரைதான்."],["பெரிய தேவைக்காகச் சேமிப்பது","சேமிப்பு அடுத்த மாதம் தொடங்கும்."],["எல்லாப் பணத்தையும் ஒரே இடத்தில் பார்ப்பது (கையில், வங்கி, வாலட்)","நான்கு இடம், முழுப் படம் இல்லை."]]],
+["நீங்கள் பணம் கடன் கொடுக்கும்போது அல்லது வாங்கும்போது, எப்படி நினைவில் வைக்கிறீர்கள்?",[["மனதில் நினைவில் வைக்கிறேன்","நம்பிக்கை நல்லது."],["பிறகு பழைய சாட்டில் ஆதாரம் தேடுவேன்","மீண்டும் சாட் தேடல்."],["எங்காவது எழுதுவேன், பிறகு அந்தக் குறிப்பை இழந்துவிடுவேன்","எழுதுவது நல்லது, பாதுகாப்பது கடினம்."],["நினைவில் வைப்பதில்லை. திரும்பி வந்தால் வரட்டும்.","அமைதியான எண்ணம். ஆனால் விலை அதிகம்."]]],
+["மாத இறுதியில் உங்கள் போனுக்கு ஒரு சிறிய சுருக்கம் வந்தால், முதலில் எதைப் பார்ப்பீர்கள்?",[["என் பணம் அதிகமாக எங்கே போனது","முதலில் இதுதான் தெரிய வேண்டும்."],["யார் எனக்குத் தர வேண்டும், நான் யாருக்குத் தர வேண்டும்","வசூல் நேரம்."],["உண்மையில் எவ்வளவு சேமித்தேன்","நல்ல தொடக்கம்."],["இந்த மாதம் கடந்த மாதத்தை விட எப்படி இருக்கிறது","புள்ளிவிவரப் பிரியர்."]]],
+["கடந்த மாதம் உங்கள் பணம் எங்கெல்லாம் போனது என்ற சிறிய பட்டியல், உங்கள் முயற்சி இல்லாமலே கிடைத்தால் எப்படி இருக்கும்?",[["ஆம், எனக்கு இது வேண்டும்","சரி, குறித்துக்கொண்டோம்."],["ஆம், அது எளிதாகவும் விரைவாகவும் இருந்தால்","மிக எளிதாக இருக்கும்."],["கொஞ்சம் பயம், ஆனாலும் பார்ப்பேன்","தைரியமான பதில்."],["இல்லை, எனக்குத் தேவையில்லை","சரி."]]],
+["“என் பணம் எங்கே போனது?” என்று எத்தனை முறை யோசிக்கிறீர்கள்?",[["கிட்டத்தட்ட தினமும்","டீ போல தினசரி பழக்கம்."],["ஒவ்வொரு வாரமும், பெரும்பாலும் வார இறுதிக்குப் பிறகு","வார இறுதிச் செலவு வேறு கதை."],["மாதம் ஒருமுறை, மாத இறுதியில்","குறைந்தது நேரம் தவறாதவர்."],["ஒருபோதும் இல்லை","உங்கள் வழியை எங்களுக்கும் சொல்லுங்கள்."]]]
+]};
+
+/* ===== SETUP: paste your own Firebase web-app config here ===== */
+var FIREBASE_CONFIG={apiKey:"AIzaSyBrh_sadYjCc8w-lTTurhl6XAr7h-HHNMw",authDomain:"survey-19d49.firebaseapp.com",projectId:"survey-19d49",storageBucket:"survey-19d49.firebasestorage.app",messagingSenderId:"532636199086",appId:"1:532636199086:web:65310e9fbd0490cfece53f"};
+/* =============================================================== */
+(function(){
+var NQ=T.en.q.length;
+var MAXPTS=PTS.reduce(function(s,a){return s+Math.max.apply(null,a);},0);
+var SRCS=['instagram','whatsapp','facebook','telegram','youtube','x','other'];
+var SRC=(function(){try{var h=(new URLSearchParams(location.search).get('s')||'').toLowerCase();return SRCS.indexOf(h)>-1?h:'';}catch(e){return '';}})();
+var app=document.getElementById('app');
+var st={step:-1,aIdx:[],pts:0,uid:'',db:null,auth:null,count:0,lang:'en',fin:'',nick:'',email:'',src:SRC};
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function L(){return T[st.lang]||T.en;}
+function fmt(s,o){return s.replace(/\{(\w+)\}/g,function(_,k){return o[k];});}
+var NEW={
+en:{step:"Last step",h:"Tell us who you are",why:"Your name and email are used only by the survey owner to contact you about this app. They are never shown to other people.",nick:"Your name",email:"Your email",where:"Where did you find this quiz?",need:"Please enter your name, a valid email, and choose where you found this quiz.",send:"Submit and see my result →",other:"Other"},
+ta:{step:"கடைசிப் படி",h:"நீங்கள் யார் என்று சொல்லுங்கள்",why:"உங்கள் பெயர் மற்றும் மின்னஞ்சலை இந்த ஆய்வின் உரிமையாளர் மட்டுமே இந்த செயலி பற்றித் தொடர்பு கொள்ளப் பயன்படுத்துவார். மற்றவர்களுக்குக் காட்டப்படாது.",nick:"உங்கள் பெயர்",email:"உங்கள் மின்னஞ்சல்",where:"இந்த வினாடி வினாவை எங்கே பார்த்தீர்கள்?",need:"பெயர், சரியான மின்னஞ்சல் ஆகியவற்றை நிரப்பி, எங்கே பார்த்தீர்கள் என்பதையும் தேர்ந்தெடுங்கள்.",send:"சமர்ப்பித்து முடிவைப் பார்க்க →",other:"மற்றவை"}};
+function N(k){ return (NEW[st.lang]||NEW.en)[k]; }
+var DONE={en:["Case already cracked!","You have already answered this quiz. One response per person keeps the results honest. Thank you!"],
+ta:["வழக்கு ஏற்கனவே தீர்ந்துவிட்டது!","நீங்கள் ஏற்கனவே இந்த வினாடி வினாவுக்குப் பதிலளித்துவிட்டீர்கள். ஒருவருக்கு ஒரு பதில் மட்டுமே முடிவுகளை நேர்மையாக வைக்கும். நன்றி!"]};
+var PEMO=['🧠','🕵️','🌀','🎩'];
+var configured=FIREBASE_CONFIG.apiKey.indexOf('PASTE')<0;
+var isAdminRoute=location.hash==='#admin';
+
+(function pickLang(){
+ var v=''; try{ v=localStorage.getItem('mq_lang')||''; }catch(e){}
+ if(!v){ var n=(navigator.language||'en').slice(0,2).toLowerCase(); v=n==='no'?'en':n; }
+ st.lang=T[v]?v:'en';
+})();
+function applyLang(){
+ document.documentElement.lang=st.lang; document.documentElement.dir=st.lang==='ur'?'rtl':'ltr';
+ document.body.classList.toggle('ur',st.lang==='ur');
+}
+function setLang(l){ st.lang=l; try{localStorage.setItem('mq_lang',l);}catch(e){} applyLang(); intro(); }
+function persona(){var p=st.pts<=5?0:st.pts<=10?1:st.pts<=15?2:3;return p;}
+
+/* ---------- animations ---------- */
+var calm=false; try{calm=window.matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){}
+function burst(chars,n,mode,from){
+ if(calm) return;
+ var layer=document.getElementById('fx'); if(!layer){layer=document.createElement('div');layer.id='fx';document.body.appendChild(layer);}
+ var W=window.innerWidth,H=window.innerHeight;
+ for(var i=0;i<n;i++){(function(){
+  var e=document.createElement('span'); e.className='fl'; e.textContent=chars[Math.floor(Math.random()*chars.length)];
+  var x=from?from.x+(Math.random()*80-40):Math.random()*W, y=from?from.y:(mode==='fall'?-30:H+10);
+  e.style.left=x+'px'; e.style.top=y+'px'; e.style.fontSize=(18+Math.random()*22)+'px';
+  var dx=(Math.random()*160-80), dy=mode==='fall'?H+60:-(180+Math.random()*260);
+  var dur=1200+Math.random()*1200, del=Math.random()*250;
+  layer.appendChild(e);
+  e.animate([{transform:'translate(0,0) rotate(0deg)',opacity:1},{transform:'translate('+dx+'px,'+dy+'px) rotate('+(Math.random()*360-180)+'deg)',opacity:0}],{duration:dur,delay:del,easing:'ease-out',fill:'forwards'}).onfinish=function(){e.remove();};
+ })();}
+}
+function walletHTML(){
+ var left=Math.max(0,100-Math.round(st.pts/MAXPTS*100));
+ var face=left>70?'😊':left>40?'😬':left>15?'😰':'💀';
+ return '<div class="wallet"><span class="wf" id="wf">'+face+'</span><div class="wbar"><b id="wb" style="width:'+left+'%;background:'+(left>60?'var(--ok)':left>30?'var(--hi)':'var(--red)')+'"></b></div><span id="wp">'+left+'%</span></div>';
+}
+function shake(el,cls){ if(calm||!el) return; el.classList.remove('shake','wobble','pulse'); void el.offsetWidth; el.classList.add(cls); }
+
+function loadCount(){
+ if(!st.db) return Promise.resolve();
+ return st.db.collection('ticks').get().then(function(q){ st.count=q.size; paintCount(); }).catch(function(e){ console.error('count failed',e); });
+}
+function setup(){
+ if(!configured) return Promise.resolve();
+ try{
+  firebase.initializeApp(FIREBASE_CONFIG); st.db=firebase.firestore(); st.auth=firebase.auth();
+  if(isAdminRoute) return Promise.resolve();
+  loadCount();
+  var reset=false; try{ var up=new URLSearchParams(location.search); if(up.get('reset')==='1'){ reset=true; up.delete('reset'); localStorage.removeItem('mq_done'); var qs=up.toString(); history.replaceState(null,'',location.pathname+(qs?'?'+qs:'')+location.hash); } }catch(e){}
+  return (reset?st.auth.signOut().catch(function(){}):Promise.resolve()).then(function(){ return st.auth.signInAnonymously(); }).then(function(c){ st.uid=c.user.uid; }).catch(function(e){ st.err=(e&&e.code)||'auth-failed'; console.error('Anonymous sign-in failed',e); });
+ }catch(e){ st.err=(e&&e.code)||'init-failed'; console.error(e); return Promise.resolve(); }
+}
+function paintCount(){
+ var t=st.count? fmt(L().cracked,{n:st.count.toLocaleString('en-US')})+' ':'';
+ document.querySelectorAll('.cnt').forEach(function(e){e.textContent=t;});
+ document.querySelectorAll('.cntcard').forEach(function(e){e.style.display=st.count?'':'none';});
+}
+function langBar(){
+ return '<div class="langs" role="group" aria-label="Language">'+LANGS.map(function(l){return '<button type="button" class="chip'+(l[0]===st.lang?' on':'')+'" data-l="'+l[0]+'">'+l[1]+'</button>';}).join('')+'</div>';
+}
+
+/* ---------- quiz ---------- */
+function intro(){
+ var t=L(); drift();
+ app.innerHTML=langBar()+'<div class="card enter"><span class="stamp">🔍 '+esc(t.cf)+'</span>'+
+ '<h1>'+esc(t.t1)+' <span class="mark">'+esc(t.t2)+'</span></h1>'+
+ '<p class="soft">'+esc(fmt(t.intro,{n:NQ}))+'</p>'+
+ '<button class="btn" id="go">'+esc(t.start)+'</button>'+
+ '<p class="soft" style="font-size:.85rem">'+esc(t.note)+'</p></div>'+
+ '<p class="foot"><span class="cnt"></span>'+esc(t.foot)+'</p>';
+ document.getElementById('go').onclick=function(){st.step=0;st.aIdx=[];st.pts=0;ask();};
+ app.querySelectorAll('.chip').forEach(function(c){c.onclick=function(){setLang(c.dataset.l);};});
+ paintCount();
+}
+function drift(){
+ if(calm||document.getElementById('dr')) return;
+ var d=document.createElement('div'); d.id='dr'; d.setAttribute('aria-hidden','true');
+ d.innerHTML=['💸','🪙','🧾','🕵️','🍕','☕','🛒','📱'].map(function(c,i){return '<i style="left:'+(6+i*12)+'%;animation-delay:'+(-i*2.3)+'s;animation-duration:'+(14+i%3*4)+'s">'+c+'</i>';}).join('');
+ document.body.appendChild(d);
+}
+function ask(){
+ var t=L(), q=t.q[st.step];
+ var prog=t.q.map(function(_,i){return '<i class="'+(i<=st.step?'on':'')+'"></i>';}).join('');
+ app.innerHTML='<div class="card enter" id="qc"><div class="prog" aria-hidden="true">'+prog+'</div>'+walletHTML()+
+  '<span class="stamp">🔎 '+esc(fmt(t.clue,{i:st.step+1,n:NQ}))+'</span><h2>'+esc(q[0])+'</h2>'+
+  '<div class="opts">'+q[1].map(function(o,i){return '<button class="opt" data-i="'+i+'">'+esc(o[0])+'</button>';}).join('')+'</div>'+
+  '<div class="reaction" id="rx" aria-live="polite"></div></div>';
+ var lock=false;
+ app.querySelectorAll('.opt').forEach(function(b){b.onclick=function(){
+   if(lock)return; lock=true; var i=+b.dataset.i;
+   b.classList.add('picked'); document.getElementById('rx').textContent=q[1][i][1];
+   var pp=PTS[st.step][i]; st.aIdx.push(i); st.pts+=pp;
+   var r=b.getBoundingClientRect(), org={x:r.left+r.width/2,y:r.top};
+   var qc=document.getElementById('qc');
+   if(pp>=3){ shake(qc,'shake'); burst(['💸','💸','😱','🪙'],9,'rise',org); }
+   else if(pp===2){ shake(qc,'wobble'); burst(['🧾','💸','🤔'],6,'rise',org); }
+   else if(pp===1){ burst(['🪙','😅'],4,'rise',org); }
+   else { burst(['✨','😄','💡','👍'],7,'rise',org); }
+   var left=Math.max(0,100-Math.round(st.pts/MAXPTS*100));
+   var wb=document.getElementById('wb'),wf=document.getElementById('wf'),wp=document.getElementById('wp');
+   if(wb){ wb.style.width=left+'%'; wb.style.background=left>60?'var(--ok)':left>30?'var(--hi)':'var(--red)'; wp.textContent=left+'%'; wf.textContent=left>70?'😊':left>40?'😬':left>15?'😰':'💀'; }
+   setTimeout(function(){ if(st.step<NQ-1){st.step++;ask();} else {details();} },1100);
+ };});
+}
+function markDone(){ try{ localStorage.setItem('mq_done',JSON.stringify({lang:st.lang,pIdx:persona()})); }catch(e){} }
+function create(){
+ if(!configured){ markDone(); return Promise.resolve(); }
+ if(!st.db||!st.uid) return Promise.reject({code:st.err||'not-signed-in'});
+ return st.db.collection('responses').doc(st.uid).set({src:st.src,lang:st.lang,aIdx:st.aIdx,score:st.pts,pIdx:persona(),at:Date.now(),nick:st.nick,contact:st.email}).then(markDone);
+}
+function write(extra){
+ if(!st.db||!st.uid) return Promise.reject({code:st.err||'not-signed-in'});
+ return st.db.collection('responses').doc(st.uid).update(extra);
+}
+function failScreen(e){
+ var code=(e&&e.code)||'unknown'; console.error('Submit failed',e);
+ app.innerHTML='<div class="card enter"><span class="stamp">⚠️ Not sent</span><h2>Your answers were not submitted</h2><p class="soft">Please check your internet and try again. (error: '+esc(code)+')</p><button class="btn" id="rt">Try again</button></div>';
+ document.getElementById('rt').onclick=function(){ analyse(); };
+}
+/* required step: name, email and where they found the quiz */
+function details(){
+ var names={instagram:'Instagram',whatsapp:'WhatsApp',facebook:'Facebook',telegram:'Telegram',youtube:'YouTube',x:'X (Twitter)',other:N('other')};
+ app.innerHTML='<div class="card enter"><span class="stamp">📝 '+esc(N('step'))+'</span><h2>'+esc(N('h'))+'</h2><p class="soft">'+esc(N('why'))+'</p>'+
+  '<div><label for="nick">'+esc(N('nick'))+' *</label><input id="nick" type="text" maxlength="60" autocomplete="name" value="'+esc(st.nick)+'"></div>'+
+  '<div><label for="ct">'+esc(N('email'))+' *</label><input id="ct" type="email" maxlength="100" autocomplete="email" value="'+esc(st.email)+'"></div>'+
+  '<div><label>'+esc(N('where'))+' *</label><div class="langs">'+SRCS.map(function(k){return '<button type="button" class="chip'+(k===st.src?' on':'')+'" data-s="'+k+'">'+esc(names[k])+'</button>';}).join('')+'</div></div>'+
+  '<div class="err" id="de" aria-live="polite"></div><button class="btn" id="dn">'+esc(N('send'))+'</button></div>';
+ app.querySelectorAll('[data-s]').forEach(function(c){c.onclick=function(){ st.src=c.dataset.s; app.querySelectorAll('[data-s]').forEach(function(x){x.classList.toggle('on',x===c);}); };});
+ document.getElementById('dn').onclick=function(){
+  var nm=document.getElementById('nick').value.trim().slice(0,60), em=document.getElementById('ct').value.trim().toLowerCase().slice(0,100);
+  if(nm.length<2||!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)||!st.src){ document.getElementById('de').textContent=N('need'); return; }
+  st.nick=nm; st.email=em; analyse();
+ };
+}
+function analyse(){
+ var t=L();
+ app.innerHTML='<div class="card enter" style="align-items:center;text-align:center"><div class="spin">🔍</div><div class="dots" aria-live="polite">💸 🧾 🕵️ 🪙</div></div>';
+ Promise.all([create(),new Promise(function(r){setTimeout(r,calm?200:1700);})]).then(finish,failScreen);
+}
+function doneScreen(pI,lang){
+ var d=DONE[lang]||DONE.en, tt=T[lang]||T.en; st.lang=T[lang]?lang:'en';
+ app.innerHTML='<div class="card enter"><span class="stamp">✅ '+esc(tt.verdict)+'</span><h1><span class="mark">'+PEMO[pI]+' '+esc(tt.p[pI][0])+'</span></h1><p>'+esc(tt.p[pI][1])+'</p></div>'+
+  '<div class="card enter"><h2>'+esc(d[0])+'</h2><p class="soft">'+esc(d[1])+'</p></div>'+
+  '<div class="card enter cntcard" style="text-align:center;display:none"><h2 style="margin:0"><span class="cnt"></span></h2></div>';
+ paintCount();
+}
+function finish(){
+ var t=L(), p=persona(), pct=Math.round(st.pts/MAXPTS*100);
+ if(st.db&&st.uid) st.db.collection('ticks').doc(st.uid).set({src:st.src,at:Date.now()}).then(loadCount).catch(function(e){console.error('tick failed',e);});
+ var susTxt=t.q[3][1][st.aIdx[3]][0];
+ app.innerHTML='<div class="card enter"><span class="stamp">🏁 '+esc(t.verdict)+'</span><p class="soft">'+esc(t.youare)+'</p><div class="bigemo">'+PEMO[p]+'</div><h1><span class="mark">'+esc(t.p[p][0])+'</span></h1><p>'+esc(t.p[p][1])+'</p>'+
+  '<div><div class="row" style="justify-content:space-between;font-family:var(--f-mono);font-size:.8rem"><span>'+esc(t.level)+'</span><span>'+pct+'%</span></div><div class="meter"><b id="mt" style="width:0"></b></div></div>'+
+  '<p class="soft">'+esc(t.sus)+' <b style="color:var(--ink)">'+esc(susTxt)+'</b></p></div>'+
+  '<div class="card enter"><span class="stamp">🎬 '+esc(t.twist)+'</span><h2>'+esc(t.caseno)+'</h2><p>'+esc(t.twistp)+'</p><p class="soft">'+esc(t.hear)+'</p>'+
+  '<div class="opts"><button class="btn" data-v="yes">'+esc(t.yes)+'</button><button class="btn alt" data-v="maybe">'+esc(t.maybe)+'</button><button class="btn alt" data-v="no">'+esc(t.no)+'</button></div><div id="after"></div></div>'+
+  '<div class="card enter cntcard" style="text-align:center;display:none"><h2 style="margin:0"><span class="cnt"></span></h2></div>'+
+  '<p class="foot">'+esc(t.thanks)+'</p>';
+ paintCount();
+ setTimeout(function(){var m=document.getElementById('mt'); if(m) m.style.width=pct+'%';},120);
+ if(p<=1) burst(['🎉','✨','🎊','🏆'],26,'rise'); else burst(['💸','💸','🪙','🧾'],26,'fall');
+ app.querySelectorAll('[data-v]').forEach(function(b){b.onclick=function(){
+   st.fin=b.dataset.v; write({fin:st.fin}).catch(function(e){console.error('fin not saved',e);});
+   if(st.fin!=='no') burst(['🎉','🙌','💌','✨'],18,'rise');
+   app.querySelectorAll('[data-v]').forEach(function(x){x.disabled=true;x.style.opacity=x===b?1:.45;});
+   document.getElementById('after').innerHTML='<p class="thanks">'+esc(st.fin==='no'?t.nothanks:t.onlist)+'</p>';
+   setTimeout(function(){ doneScreen(persona(),st.lang); window.scrollTo(0,0); },calm?600:1800);
+ };});
+}
+
+/* ---------- admin (add #admin to the address). Everything here is English + Tamil ---------- */
+function bi(k,key){return esc(T.en[key])+' / '+esc(T.ta[key]);}
+var E=T.en, TA=T.ta;
+function qa(r,i){ var a=r.aIdx&&r.aIdx[i]; var o=a!=null&&E.q[i]&&E.q[i][1][a]; if(!o) return ['-','-']; return [o[0],(TA.q[i][1][a]||o)[0]]; }
+function interestOf(r){ if(r.fin) return r.fin; var a=r.aIdx&&r.aIdx[7]; return a==null?'':INTEREST[a]; }
+function admin(){
+ if(!configured){ app.innerHTML='<div class="card"><span class="stamp">Admin</span><h2>Setup needed</h2><p class="soft">Paste your Firebase config at the top of this file, then reload.</p></div>'; return; }
+ app.innerHTML='<div class="card"><span class="stamp">Admin</span><h2>Owner login</h2>'+
+  '<div><label for="em">Email</label><input id="em" type="text" autocomplete="username"></div>'+
+  '<div><label for="pw">Password</label><input id="pw" type="password" autocomplete="current-password"></div>'+
+  '<button class="btn" id="li">Sign in</button><div class="err" id="le"></div></div>';
+ document.getElementById('li').onclick=function(){
+  st.auth.signInWithEmailAndPassword(document.getElementById('em').value.trim(),document.getElementById('pw').value)
+   .then(dash).catch(function(){document.getElementById('le').textContent='Sign-in failed.';});
+ };
+ st.auth.onAuthStateChanged(function(u){ if(u&&!u.isAnonymous) dash(); });
+}
+function bars(title,items,total){
+ var mx=Math.max.apply(null,items.map(function(x){return x[1];}).concat([1]));
+ return '<div class="ch" role="img" aria-label="'+esc(title+': '+items.map(function(x){return x[0]+' '+x[1];}).join(', '))+'"><h3>'+esc(title)+'</h3>'+
+  items.map(function(x){ var pc=total?Math.round(x[1]*100/total):0, w=x[1]?Math.max(2,x[1]/mx*100):0;
+   return '<div class="br" title="'+esc(x[0]+': '+x[1]+' ('+pc+'%)')+'"><span class="bl">'+esc(x[0])+'</span><span class="bt"><i style="width:'+w+'%"></i></span><span class="bv">'+x[1]+' · '+pc+'%</span></div>'; }).join('')+'</div>';
+}
+function donut(pos,neg,n){
+ var ans=pos+neg;
+ if(!ans) return '<div class="ch"><h3>Overall result</h3><p class="soft">No answers to the last question yet.</p></div>';
+ var pp=Math.round(pos*100/ans), np=100-pp, r=54, C=2*Math.PI*r, gap=(pos&&neg)?3:0, pl=C*pos/ans, nl=C*neg/ans;
+ var verdict=pp>=60?'Most people are positive about the app.':(pp<=40?'Most people are negative about the app.':'Opinions are split.');
+ return '<div class="ch"><h3>Overall result: positive or negative?</h3><div class="ov">'+
+  '<svg width="170" height="170" viewBox="0 0 140 140" role="img" aria-label="'+pp+'% positive, '+np+'% negative">'+
+  '<circle cx="70" cy="70" r="'+r+'" fill="none" stroke="var(--line)" stroke-width="22"/>'+
+  (pos?'<circle cx="70" cy="70" r="'+r+'" fill="none" stroke="var(--pos)" stroke-width="22" stroke-dasharray="'+Math.max(0,pl-gap)+' '+C+'" transform="rotate(-90 70 70)"><title>Positive: '+pos+' ('+pp+'%)</title></circle>':'')+
+  (neg?'<circle cx="70" cy="70" r="'+r+'" fill="none" stroke="var(--neg)" stroke-width="22" stroke-dasharray="'+Math.max(0,nl-gap)+' '+C+'" stroke-dashoffset="'+(-pl)+'" transform="rotate(-90 70 70)"><title>Negative: '+neg+' ('+np+'%)</title></circle>':'')+
+  '<text x="70" y="68" text-anchor="middle" font-size="28" font-weight="800" fill="var(--ink)">'+pp+'%</text>'+
+  '<text x="70" y="86" text-anchor="middle" font-size="11" fill="var(--soft)">positive</text></svg>'+
+  '<div class="ovl">'+
+   '<div class="ovr"><i style="background:var(--pos)"></i><span>👍 Positive<br><span class="soft" style="font-size:.78rem">Yes + Maybe</span></span><b>'+pos+' · '+pp+'%</b></div>'+
+   '<div class="ovr"><i style="background:var(--neg)"></i><span>👎 Negative<br><span class="soft" style="font-size:.78rem">Not for me</span></span><b>'+neg+' · '+np+'%</b></div>'+
+   '<p class="soft" style="font-size:.85rem;margin:0"><b style="color:var(--ink)">'+verdict+'</b><br>Based on '+ans+' of '+n+' people who answered the last question.</p>'+
+  '</div></div></div>';
+}
+function perDay(rows){
+ var days=[],now=new Date(); now.setHours(0,0,0,0);
+ for(var i=13;i>=0;i--){ var d=new Date(now); d.setDate(d.getDate()-i); days.push({d:d,n:0}); }
+ rows.forEach(function(r){ var t=new Date(r.at||0); t.setHours(0,0,0,0); days.forEach(function(x){ if(x.d.getTime()===t.getTime()) x.n++; }); });
+ var mx=Math.max.apply(null,days.map(function(x){return x.n;}).concat([1]));
+ var mon=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+ return '<div class="ch" role="img" aria-label="Responses per day, last 14 days"><h3>Responses per day (last 14 days)</h3><div class="cols">'+
+  days.map(function(x){ return '<div class="cc" title="'+esc(x.d.getDate()+' '+mon[x.d.getMonth()]+': '+x.n)+'">'+(x.n?x.n:'')+'<b style="height:'+(x.n/mx*100*0.85)+'%"></b></div>'; }).join('')+'</div><div class="cl">'+
+  days.map(function(x,i){ return '<span>'+x.d.getDate()+'</span>'; }).join('')+'</div><div class="soft" style="font-size:.75rem;margin-top:2px">Day of month · '+mon[days[0].d.getMonth()]+(days[0].d.getMonth()!==days[13].d.getMonth()?' to '+mon[days[13].d.getMonth()]:'')+'</div></div>';
+}
+var dashOn=false;
+var SRCNAME={instagram:'Instagram',whatsapp:'WhatsApp',facebook:'Facebook',telegram:'Telegram',youtube:'YouTube',x:'X (Twitter)',other:'Other',direct:'Not told'};
+function srcName(k){ return SRCNAME[k]||(k?k.charAt(0).toUpperCase()+k.slice(1):'Not told'); }
+function dash(){
+ if(dashOn) return; dashOn=true;
+ var base=location.origin+location.pathname;
+ app.innerHTML='<div class="card adm"><span class="stamp">Admin</span><h2>Results</h2><div id="a1" class="soft">Loading…</div></div>'+
+  '<div class="card adm"><h2 style="font-size:1.3rem">Charts</h2><div id="ch" class="soft">Loading…</div></div>'+
+  '<div class="card adm"><h2 style="font-size:1.3rem">Survey link</h2><p class="soft" style="font-size:.9rem">Share this one link everywhere (Instagram, WhatsApp, Facebook and more). The form asks each person where they found it, and you can see that below.</p><div class="lnk"><code>'+esc(base)+'</code><button class="btn alt sm" data-c="'+esc(base)+'">Copy</button></div></div>'+
+  '<div class="card adm"><h2 style="font-size:1.3rem">People who filled the form</h2><div id="ctl" class="soft">-</div><button class="btn alt sm" id="csv" style="align-self:flex-start">Download CSV</button></div>'+
+  '<div class="card adm"><h2 style="font-size:1.3rem">Latest responses</h2><div id="rl" class="soft">-</div></div>'+
+  '<div class="row"><button class="btn alt sm" id="out">Sign out</button></div>';
+ document.getElementById('out').onclick=function(){st.auth.signOut().then(function(){location.reload();});};
+ document.querySelectorAll('[data-c]').forEach(function(b){b.onclick=function(){
+   var t=b.dataset.c; function ok(){b.textContent='Copied';setTimeout(function(){b.textContent='Copy';},1200);}
+   if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(ok).catch(function(){}); };});
+ var rowsAll=[];
+ st.db.collection('responses').onSnapshot(function(snap){
+  var rows=snap.docs.map(function(x){return x.data();}).sort(function(a,b){return (b.at||0)-(a.at||0);}); rowsAll=rows;
+  var n=rows.length, c={yes:0,maybe:0,'scared-but-yes':0,no:0}, sus={}, ss={}, bs={}, ls={}, sc=0;
+  rows.forEach(function(r){ var f=interestOf(r); if(c[f]!==undefined)c[f]++;
+    var s3=qa(r,3), s4=qa(r,4); sus[s3[0]]=(sus[s3[0]]||0)+1; ss[s4[0]]=(ss[s4[0]]||0)+1; sc+=r.score||0;
+    var k=r.src||'direct'; bs[k]=bs[k]||{n:0,i:0}; bs[k].n++; if(f&&f!=='no')bs[k].i++;
+    var lk=r.lang||'en'; ls[lk]=(ls[lk]||0)+1; });
+  function top(o,idx){var k=Object.keys(o).sort(function(a,b){return o[b]-o[a];})[0]; if(!k||k==='-') return '-';
+    var j=E.q[idx][1].map(function(x){return x[0];}).indexOf(k); return j<0?k:esc(E.q[idx][1][j][0]);}
+  var interested=c.yes+c.maybe+c['scared-but-yes'];
+  var langName={}; LANGS.forEach(function(l){langName[l[0]]=l[1];});
+  document.getElementById('a1').className='';
+  document.getElementById('a1').innerHTML=n?
+   '<div class="big4"><div><b>'+n+'</b>Total responses</div><div><b>'+interested+'</b>Interested ('+Math.round(interested/n*100)+'%)</div><div><b>'+c.yes+'</b>Said yes</div><div><b>'+c.no+'</b>Said no</div></div>'+
+   '<table><tr><td>Average score</td><td>'+(sc/n).toFixed(1)+' out of '+MAXPTS+'</td></tr>'+
+   '<tr><td>Biggest stress</td><td style="font-family:var(--f-body)">'+top(ss,4)+'</td></tr><tr><td>Top place money goes</td><td style="font-family:var(--f-body)">'+top(sus,3)+'</td></tr></table>'
+   :'No responses yet.';
+  var chEl=document.getElementById('ch'); chEl.className='';
+  if(!n){ chEl.textContent='No responses yet.'; } else {
+   var h=donut(interested,c.no,n);
+   h+=bars('Where people found the quiz',Object.keys(bs).sort(function(a,b){return bs[b].n-bs[a].n;}).map(function(k){return [srcName(k),bs[k].n];}),n);
+   h+=perDay(rows);
+   h+=bars('Language used',Object.keys(ls).sort(function(a,b){return ls[b]-ls[a];}).map(function(k){return [langName[k]||k,ls[k]];}),n);
+   var dq='';
+   E.q.forEach(function(q,i){
+     var cnt=q[1].map(function(){return 0;}); rows.forEach(function(r){ var a=r.aIdx&&r.aIdx[i]; if(a!=null&&cnt[a]!==undefined) cnt[a]++; });
+     dq+=bars((i+1)+'. '+q[0],q[1].map(function(o,j){return [o[0],cnt[j]];}),n);
+   });
+   h+='<details class="ch"><summary style="cursor:pointer;font-weight:700">Detailed answers for each question</summary>'+dq+'</details>';
+   chEl.innerHTML=h;
+  }
+  document.getElementById('ctl').className='';
+  document.getElementById('ctl').innerHTML=n?'<div style="overflow-x:auto"><table><tr><th>#</th><th>Name</th><th>Email</th><th>Found us on</th><th>Date</th></tr>'+
+    rows.map(function(r,ri){return '<tr><td>'+(n-ri)+'</td><td style="font-family:var(--f-body)">'+esc(r.nick||'-')+'</td><td style="font-family:var(--f-body)">'+esc(r.contact||'-')+'</td><td>'+esc(srcName(r.src))+'</td><td>'+esc(new Date(r.at||0).toLocaleString())+'</td></tr>';}).join('')+'</table></div>':'No one has filled the form yet.';
+  document.getElementById('rl').className='';
+  document.getElementById('rl').innerHTML=rows.slice(0,40).map(function(r,ri){
+    var p=(r.pIdx>=0&&r.pIdx<E.p.length)?r.pIdx:0;
+    return '<details><summary>#'+(n-ri)+' · '+esc(r.nick||'-')+' · '+esc(srcName(r.src))+' · '+esc(E.p[p][0])+'</summary><div class="qa">'+
+     '<div><b>Email:</b> '+esc(r.contact||'-')+'</div>'+
+     E.q.map(function(q,i){var a=qa(r,i); return '<div><b>'+(i+1)+'. '+esc(q[0])+'</b><br>'+esc(a[0])+'</div>';}).join('')+
+     '<div><b>Final answer:</b> '+esc(r.fin||'-')+'</div></div></details>';
+  }).join('')||'-';
+ },function(){document.getElementById('a1').textContent='Access denied. Sign in with the admin email and publish the rules.';});
+ document.getElementById('csv').onclick=function(){
+  function q(v){return '"'+String(v==null?'':v).replace(/"/g,'""')+'"';}
+  var H=['time','name','email','found_on','language','persona','score'];
+  for(var i=0;i<NQ;i++){H.push('Q'+(i+1));}
+  H.push('final');
+  var lines=[H.join(',')].concat(rowsAll.map(function(r){
+    var p=(r.pIdx>=0&&r.pIdx<E.p.length)?r.pIdx:0, row=[new Date(r.at||0).toISOString(),r.nick||'',r.contact||'',srcName(r.src),r.lang||'en',E.p[p][0],r.score];
+    for(var i=0;i<NQ;i++){var a=qa(r,i); row.push(a[0]);}
+    row.push(r.fin||''); return row.map(q).join(',');}));
+  var blob=new Blob(['﻿'+lines.join('\n')],{type:'text/csv;charset=utf-8'});
+  var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='responses.csv'; document.body.appendChild(a); a.click(); a.remove();
+ };
+}
+applyLang();
+function already(){
+ var f=null; try{ f=JSON.parse(localStorage.getItem('mq_done')||'null'); }catch(e){}
+ if(!st.db||!st.uid) return Promise.resolve(f);
+ return st.db.collection('responses').doc(st.uid).get().then(function(s){ if(s.exists){var d=s.data(); return {lang:d.lang||'en',pIdx:d.pIdx||0};} return f; }).catch(function(){return f;});
+}
+setup().then(function(){
+ if(isAdminRoute) return admin();
+ return already().then(function(f){ if(f&&T[f.lang]) doneScreen(f.pIdx,f.lang); else intro(); });
+});
+})();
+
+</script></body></html>
